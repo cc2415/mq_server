@@ -1,0 +1,24 @@
+{
+    "name": "cheng/mq_server",
+    "autoload": {
+        "psr-4": {
+            "mqServer\\": "mqServer/"
+        }
+    },
+    "authors": [
+        {
+            "name": "chenzicheng",
+            "email": "137842934@qq.com"
+        }
+    ],
+    "require": {
+        "php-amqplib/php-amqplib": "^3.1",
+        "phpunit/phpunit": "^9.5",
+        "easyswoole/swoole-ide-helper": "^1.3",
+        "symfony/console": "5.4.3",
+        "elasticsearch/elasticsearch": "v7.9.1"
+    },
+    "require-dev": {
+        "eaglewu/swoole-ide-helper": "dev-master"
+    }
+}
