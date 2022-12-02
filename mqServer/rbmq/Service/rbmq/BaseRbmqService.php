@@ -1,6 +1,6 @@
 <?php
 
-namespace mqServer\Service\rbmq;
+namespace mqServer\rbmq\Service\rbmq;
 
 use mqServer\rbmq\Service\BaseService;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -100,9 +100,8 @@ class BaseRbmqService extends BaseService
     /**
      * @return AMQPStreamConnection|null
      */
-    public function getDefaultConnection($host, $prot, $user, $pass = ''): AMQPStreamConnection
+    public function getDefaultConnection(): AMQPStreamConnection
     {
-        $this->getConfig()['rbmq']['host'];
         if (!$this->connection) {
             $this->connection = new AMQPStreamConnection($this->getConfig()['rbmq']['host'], $this->getConfig()['rbmq']['port'], $this->getConfig()['rbmq']['user'], $this->getConfig()['rbmq']['pass'], $this->getConfig()['rbmq']['vhost'],
                 false,
@@ -216,13 +215,16 @@ class BaseRbmqService extends BaseService
      * 发送普通消息
      * @param $data
      */
-    public function pushDefaultMessage(array $data)
+    public function pushDefaultMessage(array $data, $need_return = false)
     {
         $this->initQueue();
         $messageBody = json_encode($data);
         $message = new AMQPMessage($messageBody, array('content_type' => 'text/plain', 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT));
-        $this->getChannel()->basic_publish($message, $this->defautlt_exchange);
+        $res = $this->getChannel()->basic_publish($message, $this->defautlt_exchange);
         $this->releaseRbmq();
+        if ($need_return) {
+            return $res;
+        }
     }
 
     /**
@@ -230,15 +232,18 @@ class BaseRbmqService extends BaseService
      * @param $data
      * @param $expiration
      */
-    public function pushDelayMessage(array $data, $expiration)
+    public function pushDelayMessage(array $data, $expiration, $need_return = false)
     {
         $this->initQueue();
         $messageBody = json_encode($data);
         $head = array('content_type' => 'text/plain', 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT, 'expiration' => $expiration * 1000);
         $message = new AMQPMessage($messageBody, $head);
         $channel = $this->getChannel();
-        $channel->basic_publish($message, $this->delay_exchange, $this->delay_routing_key);
+        $res = $channel->basic_publish($message, $this->delay_exchange, $this->delay_routing_key);
         $this->releaseRbmq();
+        if ($need_return) {
+            return $res;
+        }
 
     }
 }

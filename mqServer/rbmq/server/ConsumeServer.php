@@ -1,4 +1,5 @@
 <?php
+
 namespace mqServer\rbmq\server;
 
 use mqServer\Service\swooleClient\SwooleUdpClientService;
@@ -16,7 +17,10 @@ class ConsumeServer extends BaseRbmqServer
     function defaultProcessMessage($message)
     {
         $message->ack();
-        SwooleUdpClientService::getInstance()->coroutineSend($message->body);
+        $config = $this->getConfig();
+        if ($config['coroutine']) {
+            SwooleUdpClientService::getInstance()->coroutineSend($message->body);
+        }
         // Send a message with the string "quit" to cancel the consumer.
         if ($message->body === 'quit') {
             $message->getChannel()->basic_cancel($message->getConsumerTag());
@@ -56,7 +60,7 @@ class ConsumeServer extends BaseRbmqServer
     /**
      * 启动普通队列
      */
-    public function startDefaultConsume()
+    public function startDefaultConsume($deal_message)
     {
 
         $connection = $this->getDefaultConnection();
@@ -65,14 +69,19 @@ class ConsumeServer extends BaseRbmqServer
         $exchange = $this->getDefaultExchange();
         $this->initQueue();
         $channel->basic_qos(null, 1, null);
-        $channel->basic_consume($queue, $this->consumerTag, false, false, false, false, function (AMQPMessage $message) {
-            $this->defaultProcessMessage($message);
+        $config = $this->getConfig();
+        $channel->basic_consume($queue, $this->consumerTag, false, false, false, false, function (AMQPMessage $message) use ($deal_message, $config) {
+            if ($config['coroutine']) {
+                $this->defaultProcessMessage($message);
+            }else{
+                $deal_message($message);
+            }
         });
 
         register_shutdown_function(function () use ($connection, $channel) {
             $this->shutDown($channel, $connection);
         }, $channel, $connection);
-
+        echo "启动普通队列成功" . PHP_EOL;
 // Loop as long as the channel has callbacks registered
         while ($channel->is_consuming()) {
             $channel->wait();
@@ -82,7 +91,7 @@ class ConsumeServer extends BaseRbmqServer
     /**
      * 启动延时队列
      */
-    public function startDelayConsume()
+    public function startDelayConsume($deal_message)
     {
 
 //死信处理
@@ -96,8 +105,13 @@ class ConsumeServer extends BaseRbmqServer
 
         $channel = $connection->channel();
         $channel->basic_qos(null, 1, null);
-        $channel->basic_consume($queue, $consumerTag, false, false, false, false, function (\PhpAmqpLib\Message\AMQPMessage $message) {
-            $this->DelayProcessMessage($message);
+        $config = $this->getConfig();
+        $channel->basic_consume($queue, $consumerTag, false, false, false, false, function (\PhpAmqpLib\Message\AMQPMessage $message) use ($deal_message, $config) {
+            if ($config['coroutine']) {
+                $this->DelayProcessMessage($message);
+            }else{
+                $deal_message($message);
+            }
         });
 
 
@@ -105,6 +119,7 @@ class ConsumeServer extends BaseRbmqServer
             $this->shutDown($channel, $connection);
         }, $channel, $connection);
 
+        echo "启动延时队列成功" . PHP_EOL;
         while ($channel->is_consuming()) {
             $channel->wait();
         }

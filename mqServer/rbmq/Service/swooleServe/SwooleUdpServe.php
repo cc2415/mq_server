@@ -3,7 +3,7 @@
 namespace mqServer\Service\swooleServe;
 
 use http\Env\Request;
-use mqServer\Service\BaseService;
+use mqServer\rbmq\Service\BaseService;
 use src\Service\rbmq\ConsumeServer;
 use src\Service\rbmq\ProducerServer;
 use Swoole\Server;

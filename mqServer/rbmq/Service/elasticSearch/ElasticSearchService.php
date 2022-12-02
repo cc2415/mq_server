@@ -7,7 +7,7 @@ use Elasticsearch\ClientBuilder;
 use GuzzleHttp\Ring\Client\MockHandler;
 use PhpOffice\PhpSpreadsheet\Reader\Xls\ErrorCode;
 use src\Error\ElasticSearchError;
-use mqServer\Service\BaseService;
+use mqServer\rbmq\Service\BaseService;
 use src\Service\elasticSearch\BaseElasticSearchService;
 use think\Model;
 

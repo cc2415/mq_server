@@ -1,7 +1,7 @@
 <?php
 namespace mqServer\rbmq\server;
 
-use mqServer\Service\rbmq\BaseRbmqService;
+use mqServer\rbmq\Service\rbmq\BaseRbmqService;
 
 class ProducerServer extends BaseRbmqService
 {
@@ -10,12 +10,15 @@ class ProducerServer extends BaseRbmqService
      * @param array $data 数据
      * @param int $expiration 延时 /秒
      */
-    public function pushMessage($data = [],  $expiration = 0)
+    public function pushMessage($data = [],  $expiration = 0, $need_return = false)
     {
         if ($expiration > 0) {
-            $this->pushDelayMessage($data, $expiration);
+           $res =  $this->pushDelayMessage($data, $expiration, $need_return);
         } else {
-            $this->pushDefaultMessage($data);
+           $res =  $this->pushDefaultMessage($data, $need_return);
+        }
+        if ($need_return) {
+            return $res;
         }
     }
 

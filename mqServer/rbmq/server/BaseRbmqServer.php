@@ -133,7 +133,7 @@ class BaseRbmqServer extends BaseServer
 
     public function getDelayConnection()
     {
-        if (isNull($this->delay_connection)) {
+        if (is_null($this->delay_connection)) {
             $this->delay_connection = new AMQPStreamConnection($this->getConfig()['rbmq']['host'], $this->getConfig()['rbmq']['port'], $this->getConfig()['rbmq']['user'], $this->getConfig()['rbmq']['pass'], $this->getConfig()['rbmq']['vhost'],
                 false,
                 'AMQPLAIN',

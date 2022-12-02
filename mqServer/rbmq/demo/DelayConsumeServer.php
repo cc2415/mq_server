@@ -7,7 +7,7 @@ namespace console;
 use mqServer\rbmq\server\ConsumeServer;
 
 /**
- * 延时队列
+ * 延时队列，纯rbmq处理
  */
 class DelayConsumeServer
 {
@@ -24,10 +24,14 @@ class DelayConsumeServer
                 'vhost' => '/',
                 'debug' => true,
 
-            ]
+            ],
+            'coroutine' => false,
         ];
         ConsumeServer::getInstance()->setConfig($config);
-        ConsumeServer::getInstance()->startDelayConsume();
+        ConsumeServer::getInstance()->startDelayConsume(function($message){   //使用闭包 config的coroutine必须为false
+            $message->ack();
+            var_dump($message->body);
+        });
     }
 }
 

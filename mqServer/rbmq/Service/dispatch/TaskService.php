@@ -2,7 +2,7 @@
 
 namespace mqServer\Service\Dispatch;
 
-use mqServer\Service\BaseService;
+use mqServer\rbmq\Service\BaseService;
 use Swoole\Coroutine;
 
 class TaskService extends BaseService
