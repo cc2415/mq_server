@@ -1,5 +1,5 @@
 {
-    "name": "cheng/mqserver",
+    "name": "cheng_util/mqserver",
     "autoload": {
         "psr-4": {
             "mqServer\\": "mqServer/"

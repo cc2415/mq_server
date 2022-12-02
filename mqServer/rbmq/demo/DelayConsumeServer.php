@@ -30,4 +30,6 @@ class DelayConsumeServer
         ConsumeServer::getInstance()->startDelayConsume();
     }
 }
+
+require_once __DIR__.'/../../../vendor/autoload.php';
 (new DelayConsumeServer())->start();
