@@ -2,7 +2,7 @@
 
 namespace mqServer\rbmq\server;
 
-use mqServer\Service\swooleClient\SwooleUdpClientService;
+use mqServer\rbmq\Service\swooleClient\SwooleUdpClientService;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class ConsumeServer extends BaseRbmqServer

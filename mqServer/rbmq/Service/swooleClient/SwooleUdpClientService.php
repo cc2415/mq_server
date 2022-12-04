@@ -1,9 +1,10 @@
 <?php
 
-namespace mqServer\Service\swooleClient;
+namespace mqServer\rbmq\Service\swooleClient;
 
 use mqServer\rbmq\Service\BaseService;
 use Swoole\Coroutine\Client;
+use function PHPUnit\Framework\throwException;
 use function Swoole\Coroutine\run;
 
 class SwooleUdpClientService extends BaseService
@@ -24,12 +25,9 @@ class SwooleUdpClientService extends BaseService
         $config = $this->getConfig();
         go(function () use ($config, $data) {
             //协程
-            echo '协程发送' . PHP_EOL;
             $client = new Client(SWOOLE_SOCK_UDP);
-            $ip = $config['main_ip'];
-            $ip = '127.0.0.1';
-            if (!$client->connect($ip, 9502, 0.5)) {
-                echo "connect failed. Error: {$client->errCode}\n";
+            if (!$client->connect($config['swoole_udp']['host'], $config['swoole_udp']['port'], 0.5)) {
+                throw new \Exception('协程upd链接失败：'.$client->errCode, 4444);
             }
             if (is_array($data)) {
                 $data = json_encode($data, true);
@@ -39,18 +37,17 @@ class SwooleUdpClientService extends BaseService
         });
     }
 
+    /**
+     * 发送udp数据
+     * @param array $data
+     * @throws \Exception
+     */
     public function send($data=[])
     {
         $config = $this->getConfig();
         $client = new \Swoole\Client(SWOOLE_SOCK_UDP);
-        $ip = $config['main_ip'];
-        $ip = '127.0.0.1';
-        if (!$client->connect($ip, 9502, 5)) {
-            exit("connect failed. Error: {$client->errCode}\n");
-        }
-        echo '普通发送' . PHP_EOL;
-        if ($client->isConnected()){
-            echo '链接成功' . PHP_EOL;
+        if (!$client->connect($config['swoole_udp']['host'], $config['swoole_udp']['port'], 5)) {
+            throw new \Exception('upd链接失败：'.$client->errCode, 4444);
         }
         $client->send(json_encode($data));
         $client->close();

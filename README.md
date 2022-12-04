@@ -1,74 +1,48 @@
 # mq服务
-
-# 启动消费服务
+## 配置
 ```php
-
+$config = [
+        'main_ip' => '192.168.10.5',
+        'rbmq' => [
+            'host' => '192.168.10.5',
+            'port' => 5672,
+            'user' => 'guest',
+            'pass' => 'guest',
+            'vhost' => '/',
+            'debug' => true,
+        ],
+        'coroutine' => true,    //使用swoole协程处理mq接收到的数据
+        'swoole_udp' => [   //swoole upd的配置
+            'port' => 9502,
+            'host' => '127.0.0.1'
+        ]
+    ];
+```
+## 启动消费服务
+```php
 /**
  * 默认消费队列，纯rbmq处理
  */
-class DefaultConsumeServer
-{
-    public function start()
-    {
-
-        $config = [
-            'main_ip' => '10.1.160.254',
-            'rbmq' => [
-                'host' => '10.1.160.254',
-                'port' => 5672,
-                'user' => 'guest',
-                'pass' => 'guest',
-                'vhost' => '/',
-                'debug' => true,
-
-            ],
-            'coroutine' => false,
-        ];
-        ConsumeServer::getInstance()->setConfig($config);
-        ConsumeServer::getInstance()->startDefaultConsume(function($message){   //使用闭包 config的coroutine必须为false
+ 
+require_once __DIR__.'/../../../vendor/autoload.php';
+ConsumeServer::getInstance()->setConfig($config);
+ConsumeServer::getInstance()->startDefaultConsume(function($message){   //使用闭包 config的coroutine必须为false
             $message->ack();
             var_dump(json_decode($message->body, true));
         });
-    }
-}
-
-require_once __DIR__.'/../../../vendor/autoload.php';
-(new DefaultConsumeServer())->start();
-
-
-
+        
 
 /**
  * 延时队列，纯rbmq处理
  */
-class DelayConsumeServer
-{
-    public function start()
-    {
-
-        $config = [
-            'main_ip' => '10.1.160.254',
-            'rbmq' => [
-                'host' => '10.1.160.254',
-                'port' => 5672,
-                'user' => 'guest',
-                'pass' => 'guest',
-                'vhost' => '/',
-                'debug' => true,
-
-            ],
-            'coroutine' => false,
-        ];
-        ConsumeServer::getInstance()->setConfig($config);
+ 
+require_once __DIR__.'/../../../vendor/autoload.php';
+ConsumeServer::getInstance()->setConfig($config);
         ConsumeServer::getInstance()->startDelayConsume(function($message){   //使用闭包 config的coroutine必须为false
             $message->ack();
             var_dump($message->body);
         });
-    }
-}
-
-require_once __DIR__.'/../../../vendor/autoload.php';
-(new DelayConsumeServer())->start();
+        
 
 ```
 
@@ -76,24 +50,7 @@ require_once __DIR__.'/../../../vendor/autoload.php';
 ## 发送mq消息
 ```php
 
-
 require_once __DIR__.'/../../../vendor/autoload.php';
-
-
-
-$config = [
-    'main_ip' => '10.1.160.254',
-    'rbmq' => [
-        'host' => '10.1.160.254',
-        'port' => 5672,
-        'user' => 'guest',
-        'pass' => 'guest',
-        'vhost' => '/',
-        'debug' => true,
-    ],
-    'coroutine' => false,
-];
-
 ProducerServer::getInstance()->setConfig($config);
 
 $time = time();
@@ -108,7 +65,7 @@ $res = ProducerServer::getInstance()->pushMessage([
 var_dump($res);
 
 
-//todo 发送协程消息
+//协程发消息
 ProducerServer::getInstance()->pushMessageCoroutine([
                 'type' => 'deafult_message',
                 'msg' => '普通内容',
@@ -117,8 +74,17 @@ ProducerServer::getInstance()->pushMessageCoroutine([
             ]);
 ```
 
-## 发送udp消息
+## 单独发送udp消息，不经过mq
 ```php
- $body = SwooleUdpClientService::getInstance()->buildBody('ccc', ['asdf' => date('Y-m-d H:i:s')]);
- SwooleUdpClientService::getInstance()->CoroutineSend($body);
+// 单独发udp消息
+SwooleUdpClientService::getInstance()->setConfig($config);
+$body = SwooleUdpClientService::getInstance()->buildBody('ccc', ['asdf' => date('Y-m-d H:i:s')]);
+SwooleUdpClientService::getInstance()->CoroutineSend($body);
 ```
+### demo说明：
+1、普通消费
+DemoDefaultConsumeServer.php 启动普通消费队列
+DemoDelayConsumeServer 启动延时队列
+2、swoole的协程消费
+    先启动对应的mq服务，普通或者延时，然后启动DemoSwooleUdpServer.php 这个udp协程处理
+
