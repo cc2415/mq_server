@@ -1,4 +1,5 @@
 # mq服务
+**composer require cheng_util/mqserver**
 ## 配置
 ```php
 $config = [
