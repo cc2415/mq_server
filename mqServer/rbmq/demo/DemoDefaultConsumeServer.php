@@ -5,6 +5,8 @@ namespace mqServer\rbmq\demo;
 
 use mqServer\rbmq\server\ConsumeServer;
 
+require_once __DIR__ . '/../../../vendor/autoload.php';
+
 /**
  * 默认消费队列，纯rbmq处理
  */
@@ -21,5 +23,4 @@ class DemoDefaultConsumeServer
     }
 }
 
-require_once __DIR__ . '/../../../vendor/autoload.php';
 (new DemoDefaultConsumeServer())->start();

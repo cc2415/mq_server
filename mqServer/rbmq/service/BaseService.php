@@ -1,9 +1,9 @@
 <?php
 
-namespace mqServer\rbmq\Service;
+namespace mqServer\rbmq\service;
 
 
-abstract class BaseServer
+abstract class BaseService
 {
     protected static $instance = [];
 

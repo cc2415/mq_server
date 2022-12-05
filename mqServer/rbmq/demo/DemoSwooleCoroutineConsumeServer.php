@@ -4,7 +4,6 @@ namespace mqServer\rbmq\demo;
 
 
 use mqServer\rbmq\server\ConsumeServer;
-use mqServer\rbmq\server\SwooleUdpServer;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 

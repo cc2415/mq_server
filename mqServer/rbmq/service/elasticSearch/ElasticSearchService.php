@@ -1,6 +1,6 @@
 <?php
 
-namespace mqServer\Service\elasticSearch;
+namespace mqServer\service\elasticSearch;
 
 
 use Elasticsearch\ClientBuilder;

@@ -1,6 +1,6 @@
 <?php
 
-namespace mqServer\rbmq\Service\rbmq;
+namespace mqServer\rbmq\service\rbmq;
 
 use mqServer\rbmq\Service\BaseService;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -25,19 +25,14 @@ class BaseRbmqService extends BaseService
     private $delay_connection = null;//mq的链接
 
     public $dead_exchange = 'default_dead_exchange';//死信交换机
-
     public $dead_queue = 'default_dead_queue';//死信队列
-
     public $dead_route_key = 'default_dead_route_key';//死信route-key
 
     public $queue = 'default_queue';//普通队列
-
     public $defautlt_exchange = 'default_exchange';//普通交换机
 
     public $delay_queue = 'default_delay_queue';//延时队列
-
     public $delay_exchange = 'default_delay_exchange';//延时交换机
-
     public $delay_routing_key = 'default_delay_rout_key';//延时rout-key
 
 
@@ -133,7 +128,7 @@ class BaseRbmqService extends BaseService
 
     public function getDelayConnection()
     {
-        if (isNull($this->delay_connection)) {
+        if (is_null($this->delay_connection)) {
             $this->delay_connection = new AMQPStreamConnection($this->getConfig()['rbmq']['host'], $this->getConfig()['rbmq']['port'], $this->getConfig()['rbmq']['user'], $this->getConfig()['rbmq']['pass'], $this->getConfig()['rbmq']['vhost'],
                 false,
                 'AMQPLAIN',
@@ -163,8 +158,6 @@ class BaseRbmqService extends BaseService
     public function initQueue()
     {
         if (!$this->is_init) {
-
-
             /**
              * -----------------------------初始化死信队列-----------------------------
              */
@@ -213,7 +206,9 @@ class BaseRbmqService extends BaseService
 
     /**
      * 发送普通消息
-     * @param $data
+     * @param array $data
+     * @param bool $need_return
+     * @return void
      */
     public function pushDefaultMessage(array $data, $need_return = false)
     {
@@ -229,8 +224,10 @@ class BaseRbmqService extends BaseService
 
     /**
      * 发送延时消息
-     * @param $data
+     * @param array $data
      * @param $expiration
+     * @param false $need_return
+     * @return void
      */
     public function pushDelayMessage(array $data, $expiration, $need_return = false)
     {

@@ -3,7 +3,6 @@
 namespace mqServer\rbmq\demo;
 
 
-use mqServer\rbmq\server\ConsumeServer;
 use mqServer\rbmq\server\SwooleUdpServer;
 
 /**

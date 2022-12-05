@@ -1,6 +1,6 @@
 <?php
 
-namespace mqServer\rbmq\Service\swooleClient;
+namespace mqServer\rbmq\service\swooleClient;
 
 use mqServer\rbmq\Service\BaseService;
 use Swoole\Coroutine\Client;

@@ -1,7 +1,7 @@
 <?php
 namespace mqServer\rbmq\server;
 
-use mqServer\rbmq\Service\rbmq\BaseRbmqService;
+use mqServer\rbmq\service\rbmq\BaseRbmqService;
 
 class ProducerServer extends BaseRbmqService
 {

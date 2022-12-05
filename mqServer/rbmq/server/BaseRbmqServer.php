@@ -2,14 +2,12 @@
 
 namespace mqServer\rbmq\server;
 
-use mqServer\rbmq\Service\BaseServer;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
 
 class BaseRbmqServer extends BaseServer
-
 {
     private $had_init_queue_list = [];//
 

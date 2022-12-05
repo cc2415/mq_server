@@ -1,23 +1,24 @@
 <?php
 
-namespace mqServer\rbmq\Service;
+namespace mqServer\rbmq\server;
 
 
-abstract class BaseService
+abstract class BaseServer
 {
     protected static $instance = [];
 
     protected static $config = [];
+
     public static function getInstance()
     {
-       $class_name =  get_called_class();
+        $class_name = get_called_class();
         if (!isset(self::$instance[$class_name]) || $class_name instanceof self) {
             self::$instance[$class_name] = new static;
         }
         return self::$instance[$class_name];
     }
 
-    public function  getConfig()
+    public function getConfig()
     {
         return self::$config;
     }
